@@ -16,7 +16,6 @@ export default function Home() {
   const [error, setError] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
-
   const [page, setPage] = useState(1);
   const itemsPerPage = 8;
 
@@ -36,11 +35,9 @@ export default function Home() {
 
   const handleSearch = (value) => {
     setSearchTerm(value);
-
     const result = products.filter(p =>
       p.title.toLowerCase().includes(value.toLowerCase())
     );
-
     setFiltered(result);
     setPage(1);
   };
@@ -62,101 +59,82 @@ export default function Home() {
   const isLastPage = start + itemsPerPage >= filtered.length;
 
   return (
-    <div className="pt-20 min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-6">
+    <div className="pt-20 min-h-screen bg-gradient-to-br from-blue-200 via-indigo-100 to-gray-300 p-6">
 
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">
-        Explore Products
-      </h1>
+      <div className="max-w-7xl mx-auto">
 
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <h1 className="text-3xl font-bold mb-6 text-gray-800">
+          Explore Products
+        </h1>
 
-        <input
-          value={searchTerm}
-          onChange={(e) => handleSearch(e.target.value)}
-          placeholder="Search products..."
-          className="flex-1 border border-gray-300 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
+        <div className="bg-white rounded-xl shadow-md p-4 mb-6 flex flex-col md:flex-row gap-4">
 
-        <button
-          onClick={() => {
-            setSearchTerm("");
-            setFiltered(products);
-          }}
-          className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-xl cursor-pointer"
-        >
-          Clear
-        </button>
+          <input
+            value={searchTerm}
+            onChange={(e) => handleSearch(e.target.value)}
+            placeholder="Search products..."
+            className="flex-1 bg-gray-100 border border-gray-300 p-3 rounded-lg focus:outline-none"
+          />
 
-        <select
-          onChange={(e) => handleCategory(e.target.value)}
-          className="border border-gray-300 p-3 rounded-xl cursor-pointer"
-        >
-          <option value="all">All Categories</option>
-          {categories.map(c => (
-            <option key={c}>{c}</option>
-          ))}
-        </select>
+          <button
+            onClick={() => {
+              setSearchTerm("");
+              setFiltered(products);
+            }}
+            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg cursor-pointer"
+          >
+            Clear
+          </button>
 
-      </div>
+          <select
+            onChange={(e) => handleCategory(e.target.value)}
+            className="bg-gray-100 border border-gray-300 p-3 rounded-lg"
+          >
+            <option value="all">All Categories</option>
+            {categories.map(c => (
+              <option key={c}>{c}</option>
+            ))}
+          </select>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        </div>
 
-        {filtered.length === 0 ? (
-          <div className="col-span-full flex flex-col items-center justify-center mt-10 text-gray-500">
-
-            <div className="text-5xl mb-3">🔍</div>
-
-            <p className="text-lg font-medium">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {filtered.length === 0 ? (
+            <div className="col-span-full text-center text-gray-500 mt-10">
               No products found
-            </p>
+            </div>
+          ) : (
+            paginated.map(p => (
+              <ProductCard key={p.id} product={p} />
+            ))
+          )}
+        </div>
 
-            <p className="text-sm">
-              Try a different search or clear filters
-            </p>
+        {filtered.length > 0 && (
+          <div className="flex justify-center gap-4 mt-8">
 
-            <button
-              onClick={() => {
-                setSearchTerm("");
-                setFiltered(products);
-              }}
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer"
-            >
-              Reset Search
-            </button>
+            {!isFirstPage && (
+              <button
+                onClick={() => setPage(p => p - 1)}
+                className="px-4 py-2 bg-white border rounded-lg hover:bg-gray-200 cursor-pointer"
+              >
+                Prev
+              </button>
+            )}
+
+            {!isLastPage && (
+              <button
+                onClick={() => setPage(p => p + 1)}
+                className="px-4 py-2 bg-white border rounded-lg hover:bg-gray-200 cursor-pointer"
+              >
+                Next
+              </button>
+            )}
 
           </div>
-        ) : (
-          paginated.map(p => (
-            <ProductCard key={p.id} product={p} />
-          ))
         )}
 
       </div>
-
-      {filtered.length > 0 && (
-        <div className="flex justify-center gap-4 mt-8">
-
-          {!isFirstPage && (
-            <button
-              onClick={() => setPage(p => p - 1)}
-              className="px-4 py-2 bg-white border rounded-xl hover:bg-gray-200 cursor-pointer"
-            >
-              Prev
-            </button>
-          )}
-
-          {!isLastPage && (
-            <button
-              onClick={() => setPage(p => p + 1)}
-              className="px-4 py-2 bg-white border rounded-xl hover:bg-gray-200 cursor-pointer"
-            >
-              Next
-            </button>
-          )}
-
-        </div>
-      )}
-
     </div>
   );
 }

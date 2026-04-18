@@ -8,31 +8,34 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    if (!name) return alert("Enter your name");
+    if (!name.trim()) return alert("Enter a name");
     login(name);
     navigate("/");
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
+    <div className="pt-20 min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-200 via-indigo-100 to-gray-300 px-4">
 
-      <div className="bg-white p-6 rounded shadow w-80">
-        <h2 className="text-xl font-bold mb-4 text-center">Login</h2>
+      <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-sm">
+
+        <h1 className="text-2xl font-bold mb-6 text-center">
+          Login
+        </h1>
 
         <input
-          type="text"
-          placeholder="Enter your name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full border p-2 mb-4 rounded"
+          placeholder="Enter your name"
+          className="w-full bg-gray-100 border border-gray-300 p-3 rounded-lg mb-4 focus:outline-none"
         />
 
         <button
           onClick={handleLogin}
-          className="w-full bg-blue-500 text-white py-2 rounded"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg cursor-pointer"
         >
           Login
         </button>
+
       </div>
 
     </div>
