@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   getProducts,
   getCategories,
@@ -17,6 +17,12 @@ export default function Home() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
+
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [open, setOpen] = useState(false);
+
+  const dropdownRef = useRef();
+
   const itemsPerPage = 8;
 
   useEffect(() => {
@@ -33,24 +39,40 @@ export default function Home() {
     getCategories().then(res => setCategories(res.data));
   }, []);
 
+  // close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleSearch = (value) => {
     setSearchTerm(value);
+
     const result = products.filter(p =>
       p.title.toLowerCase().includes(value.toLowerCase())
     );
+
     setFiltered(result);
     setPage(1);
   };
 
   const handleCategory = (cat) => {
+    setSelectedCategory(cat);
+    setOpen(false);
+
     if (cat === "all") setFiltered(products);
     else getProductsByCategory(cat).then(res => setFiltered(res.data));
+
     setPage(1);
   };
 
   if (loading) return <Loader />;
-  if (error)
-    return <p className="text-center text-red-500 mt-10">Error loading data</p>;
+  if (error) return <p className="text-center text-red-500 mt-10">Error loading data</p>;
 
   const start = (page - 1) * itemsPerPage;
   const paginated = filtered.slice(start, start + itemsPerPage);
@@ -67,8 +89,10 @@ export default function Home() {
           Explore Products
         </h1>
 
+        {/* Search + Filter */}
         <div className="bg-white rounded-xl shadow-md p-4 mb-6 flex flex-col md:flex-row gap-4">
 
+          {/* Search */}
           <input
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
@@ -76,6 +100,7 @@ export default function Home() {
             className="flex-1 bg-gray-100 border border-gray-300 p-3 rounded-lg focus:outline-none"
           />
 
+          {/* Clear */}
           <button
             onClick={() => {
               setSearchTerm("");
@@ -86,19 +111,46 @@ export default function Home() {
             Clear
           </button>
 
-          <select
-            onChange={(e) => handleCategory(e.target.value)}
-            className="bg-gray-100 border border-gray-300 p-3 rounded-lg"
-          >
-            <option value="all">All Categories</option>
-            {categories.map(c => (
-              <option key={c}>{c}</option>
-            ))}
-          </select>
+          {/* CUSTOM DROPDOWN */}
+          <div className="relative w-full md:w-60" ref={dropdownRef}>
+
+            <button
+              onClick={() => setOpen(!open)}
+              className="w-full bg-gray-100 border border-gray-300 p-3 rounded-lg text-left cursor-pointer"
+            >
+              {selectedCategory === "all" ? "All Categories" : selectedCategory}
+            </button>
+
+            {open && (
+              <div className="absolute top-full mt-2 w-full bg-white border rounded-xl shadow-lg z-10 overflow-hidden">
+
+                <div
+                  onClick={() => handleCategory("all")}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  All Categories
+                </div>
+
+                {categories.map(c => (
+                  <div
+                    key={c}
+                    onClick={() => handleCategory(c)}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    {c}
+                  </div>
+                ))}
+
+              </div>
+            )}
+
+          </div>
 
         </div>
 
+        {/* Products */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+
           {filtered.length === 0 ? (
             <div className="col-span-full text-center text-gray-500 mt-10">
               No products found
@@ -108,26 +160,28 @@ export default function Home() {
               <ProductCard key={p.id} product={p} />
             ))
           )}
+
         </div>
 
+        {/* Pagination */}
         {filtered.length > 0 && (
           <div className="flex justify-center gap-4 mt-8">
 
             {!isFirstPage && (
               <button
                 onClick={() => setPage(p => p - 1)}
-                className="px-4 py-2 bg-white border rounded-lg hover:bg-gray-200 cursor-pointer"
+                className="flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-md hover:scale-105 transition cursor-pointer"
               >
-                Prev
+                ← Prev
               </button>
             )}
 
             {!isLastPage && (
               <button
                 onClick={() => setPage(p => p + 1)}
-                className="px-4 py-2 bg-white border rounded-lg hover:bg-gray-200 cursor-pointer"
+                className="flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-blue-500 text-white shadow-md hover:scale-105 transition cursor-pointer"
               >
-                Next
+                Next →
               </button>
             )}
 

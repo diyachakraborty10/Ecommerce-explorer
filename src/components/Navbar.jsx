@@ -29,7 +29,9 @@ export default function Navbar() {
       ) : (
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-2">
 
+          {/* Top Row */}
           <div className="flex justify-between items-center">
+
             <Link
               to="/"
               className="text-xl md:text-2xl font-bold text-blue-600"
@@ -37,31 +39,52 @@ export default function Navbar() {
               ShopEase
             </Link>
 
+            {/* Mobile Cart */}
             <Link
               to="/cart"
-              className={`md:hidden ${active("/cart")} text-sm`}
+              className={`relative md:hidden ${active("/cart")} text-sm`}
             >
-              Cart ({cart.length})
+              Cart
+
+              {cart.length > 0 && (
+                <span className="absolute -top-2 -right-3 bg-red-500 text-white text-[10px] px-1.5 py-[1px] rounded-full">
+                  {cart.length}
+                </span>
+              )}
             </Link>
+
           </div>
 
+          {/* Bottom Row */}
           <div className="flex flex-wrap items-center justify-between gap-3 text-sm md:text-base">
 
+            {/* Left Links */}
             <div className="flex gap-4">
+
               <Link to="/" className={active("/")}>
                 Home
               </Link>
 
+              {/* Desktop Cart */}
               <Link
                 to="/cart"
-                className={`hidden md:block ${active("/cart")}`}
+                className={`relative hidden md:block ${active("/cart")}`}
               >
-                Cart ({cart.length})
+                Cart
+
+                {cart.length > 0 && (
+                  <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs px-1.5 py-[1px] rounded-full">
+                    {cart.length}
+                  </span>
+                )}
               </Link>
+
             </div>
 
+            {/* Auth Section */}
             {user ? (
               <div className="flex items-center gap-2">
+
                 <span className="text-gray-600 text-xs md:text-sm truncate max-w-[80px] md:max-w-none">
                   {user}
                 </span>
@@ -72,6 +95,7 @@ export default function Navbar() {
                 >
                   Logout
                 </button>
+
               </div>
             ) : (
               <Link
@@ -81,10 +105,12 @@ export default function Navbar() {
                 Login
               </Link>
             )}
+
           </div>
 
         </div>
       )}
+
     </nav>
   );
 }
