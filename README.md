@@ -6,8 +6,7 @@ A clean and responsive frontend application built using React and Tailwind CSS t
 
 ## 🚀 Live Demo
 
-👉 https://your-vercel-link.vercel.app
-
+👉 https://ecommerce-explorer.vercel.app/
 ---
 
 ## 📌 Features
